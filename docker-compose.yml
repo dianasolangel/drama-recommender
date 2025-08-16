@@ -1,0 +1,11 @@
+services:
+  recommender:
+    build: .
+    ports:
+      - "8501:8501"
+    command: streamlit run app/api/main.py --server.port=8501 --server.address=0.0.0.0
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+
