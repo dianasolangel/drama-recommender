@@ -1,0 +1,15 @@
+data:
+  raw_watchlist: data/raw/watchlist.csv
+  raw_all_dramas: data/raw/all_dramas.csv
+  processed_dataset: data/processed/dramas_with_popularity_flag.csv
+  interim_merged: data/interim/merged_watchlist.csv
+
+fetch:
+  username: 14855658
+  min_rating: 7.0
+  countries: ["South Korea", "Japan", "China"]
+
+embedding:
+  model_name: all-MiniLM-L6-v2
+  chroma_path: src/chroma_db
+  collection_name: dramas
