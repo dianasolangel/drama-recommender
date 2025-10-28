@@ -10,3 +10,4 @@ poetry.lock
 #chroma 
 app/chroma_db/
 src/chroma_db/
+.DS_Store
