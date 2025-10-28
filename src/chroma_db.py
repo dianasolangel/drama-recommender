@@ -25,7 +25,6 @@ df['text'] = df.apply(build_text, axis=1)
 df = df[df['text'].notnull() & (df['text'].str.strip() != "")]
 
 # We generate embeddings
-
 model = SentenceTransformer("all-MiniLM-L6-v2")
 texts = df['text'].tolist()
 embeddings = model.encode(
@@ -54,5 +53,5 @@ for i in tqdm(range(0, len(docs), batch_size), desc="Inserting into Chroma"):
         ids=ids[i:i+batch_size]
     )
     
-print("✅ ChromaDB built and saved.")
+print("ChromaDB built and saved.")
 print("Total docs saved:", collection.count())

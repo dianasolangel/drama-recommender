@@ -27,13 +27,13 @@ $(PROCESSED): $(WATCHLIST) $(ALL_DRAMAS)
 $(CHROMA)/chroma.sqlite3: $(PROCESSED)
 	poetry run python -m src.embedding.embed_to_chroma
 
-# ====== Upload to Hugging Face Datasets ======
+# # ====== Upload to Hugging Face Datasets LATER ======
 
-upload-dataset: $(PROCESSED)
-	poetry run python -m src.upload.save_dataset_to_hf
+# upload-dataset: $(PROCESSED)
+# 	poetry run python -m src.upload.save_dataset_to_hf
 
-upload-model:
-	poetry run python -m src.upload.save_model_to_hf
+# upload-model:
+# 	poetry run python -m src.upload.save_model_to_hf
 
 # ====== Manual Convenience Targets ======
 
@@ -54,7 +54,6 @@ embed:
 all: $(CHROMA)/chroma.sqlite3
 
 # ====== Cleaning ======
-
 clean:
 	rm -rf data/interim/*
 	rm -rf src/chroma_db/*

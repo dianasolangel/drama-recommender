@@ -7,3 +7,6 @@ data/
 .venv/
 poetry.lock
 .mypy_cache/
+#chroma 
+app/chroma_db/
+src/chroma_db/

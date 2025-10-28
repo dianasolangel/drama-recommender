@@ -5,6 +5,7 @@ from src.utils import load_params
 from tqdm import tqdm
 
 def fetch_watchlist(params):
+    "To fetch my own watchlist from MyDramaList via kuryana API"
     username = params["fetch"]["username"]
     url = f"https://kuryana.tbdh.app/dramalist/{username}"
 
@@ -26,10 +27,11 @@ def fetch_watchlist(params):
 
     df = pd.DataFrame(all_dramas)
     df.to_csv(params["data"]["raw_watchlist"], index=False)
-    print("✅ Watchlist saved.")
+    print("Watchlist saved.")
 
 
 def get_all_drama_names(drama_id: int):
+    "To fetch all known titles for a drama by its ID"
     url = f"https://kuryana.tbdh.app/id/{drama_id}"
     res = requests.get(url)
 
@@ -42,10 +44,14 @@ def get_all_drama_names(drama_id: int):
         all_names = list({main_title, *native_titles, *also_known_as}) # unique names
         return all_names
     else:
-        print(f"❌ Could not fetch titles for drama {drama_id} — Status: {res.status_code}")
+        print(f"Could not fetch titles for drama {drama_id} — Status: {res.status_code}")
         return []
 
 def fetch_all_dramas(params):
+    """To fetch all dramas from MyDramaList via kuryana API,
+    filter by country and rating, and enrich with full synopsis and alternative titles"""
+    
+    # Constants
     BASE_URL = "https://kuryana.tbdh.app"
     YEARS = range(2015, 2026)
     QUARTERS = [1, 2, 3, 4]
@@ -79,8 +85,9 @@ def fetch_all_dramas(params):
                         drama_id = drama.get("id")
                         full_synopsis = fallback_synopsis
                         all_names = []
+                        tags = []
 
-                        # Try to get full details
+                        # Fetch full details for synopsis and alternative titles
                         try:
                             detail_url = f"{BASE_URL}/id/{drama_id}"
                             detail_res = requests.get(detail_url)
@@ -89,6 +96,7 @@ def fetch_all_dramas(params):
                                 full_data = detail_res.json()["data"]
                                 full_synopsis = full_data.get("synopsis", fallback_synopsis)
                                 all_names = get_all_drama_names(drama_id)
+                                tags = full_data.get("others", {}).get("tags", [])
                             else:
                                 print(f"Failed to fetch details for ID {drama_id}: {detail_res.status_code}")
                         except Exception as e:
@@ -107,11 +115,11 @@ def fetch_all_dramas(params):
                             "ranking": drama.get("ranking"),
                             "popularity": drama.get("popularity"),
                             "genres": drama.get("genres"),
+                            "tags": tags,
                             "synopsis": full_synopsis,
                             "url": f"https://mydramalist.com{drama.get('url')}"
                         })
-
-                        time.sleep(0.2)  # polite delay
+                        time.sleep(0.2)
                 except Exception as e:
                     print(f"Skipped a drama due to error: {e}")
 
@@ -119,8 +127,9 @@ def fetch_all_dramas(params):
 
     df = pd.DataFrame(all_dramas)
     df.to_csv(OUTPUT_PATH, index=False)
-    print(f"\n✅ All dramas enriched and saved to {OUTPUT_PATH}")
+    print(f"\nAll dramas enriched and saved to {OUTPUT_PATH}")
+    
 if __name__ == "__main__":
     params = load_params()
-    fetch_watchlist(params)
+    # fetch_watchlist(params)
     fetch_all_dramas(params)
